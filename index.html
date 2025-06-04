@@ -7,6 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "7a988b9bbc6747e88c1302a86bcf0f3d"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+
   <style>
     button {
       margin: 3px;
@@ -95,13 +103,138 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      // Part 3.
+      try {
+        if (!firstNum || !secondNum) {
+          throw new SyntaxError("Incomplete data, need input.");
+        }
+        if (isNaN(firstNum) || isNaN(secondNum)) {
+          throw new TypeError("Inputs must be numbers.");
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          alert("Input Error: " + err.message);
+          console.error("Input Error: " + err.message);
+        } else if (err instanceof TypeError) {
+          alert("Type Error: " + err.message);
+          console.error("Type Error: " + err.message);
+        } else {
+          throw err;
+        }
+      } finally {
+        console.log("Finished! (using finally in try/catch)");
+      }
+
+      // Part 4.
+      class ZeroDivisionError extends Error {
+        constructor(message) {
+          super(message);
+          this.name = "ZeroDivisionError";
+        }
+      }
+
+      function divide(first, second) {
+        if (second == 0) {
+          throw new ZeroDivisionError("Cant divide by 0!!!!");
+        }
+        return first / second;
+      }
+
+      try {
+        if (!firstNum || !secondNum) {
+          throw new SyntaxError("Incomplete data, need input.");
+        }
+        if (operator === "/") {
+          let output = divide(firstNum, secondNum);
+        }
+      } catch (err) {
+        if (err instanceof ZeroDivisionError) {
+          console.log("Custom Division Error: ", err.message);
+        }
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+    // Start your code here. (Part 3 and 4 are above)
+
+    // Part 2. 
+    errorBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+
+        const first = form.elements['first-num'].value;
+        const op = form.elements['operator'].value;
+        const second = form.elements['second-num'].value;
+
+        if (btn.innerText === "Console Log") {
+          console.log("Console log example: The two values in the calculator are ", `${first}`, "and", `${second}`);
+        } else if (btn.innerText === "Console Error") {
+          console.error("ERROR! ERROR! example :)");
+        } else if (btn.innerText === "Console Count") {
+          console.count("Count Button");
+        } else if (btn.innerHTML === "Console Warn") {
+          console.warn("WARNING! EXAMPLE!");
+          if (op === "/" && second === 0) {
+            console.warn("WARNING Cant divide by 0!");
+          }
+        } else if (btn.innerHTML === "Console Assert") {
+          console.assert(first === 9999, "First number should be 9999!");
+        } else if (btn.innerHTML === "Console Clear") {
+          console.clear();
+        } else if (btn.innerHTML === "Console Dir") {
+          console.dir(document.head);
+        } else if (btn.innerHTML === "Console dirxml") {
+          console.dirxml(document);
+        } else if (btn.innerHTML === "Console Group Start") {
+          console.group("Group:");
+        } else if (btn.innerHTML === "Console Group End") {
+          console.groupEnd("Group:");
+        } else if (btn.innerHTML === "Console Table") {
+          var examples = [
+            {
+              first: 1,
+              operator: "+",
+              second: 2,
+            },
+            {
+              first: 2,
+              operator: "-",
+              second: 1,
+            },
+            {
+              first: 5,
+              operator: "/",
+              second: 2,
+            }
+          ];
+          console.table(examples);
+        } else if (btn.innerHTML === "Start Timer") {
+          console.time("time");
+          for (var i = 0; i < 10000000; i++) {
+            let sqrt = Math.sqrt(i);
+          }
+        } else if (btn.innerHTML === "End Timer") {
+          console.timeEnd("time");
+        } else if (btn.innerHTML === "Console Trace") {
+          const first = () => { second(); };
+          const second = () => { third(); };
+          const third = () => { console.trace(); };
+          first();
+        } else if (btn.innerHTML === "Trigger a Global Error") { // Part 5.
+          window.onerror = function(message, url, line, col, error) {
+          alert(`${message}`);
+          console.log(message);
+          };
+          function readData() {
+            boom();
+          }
+          readData();
+          }
+        TrackJS.track('Testing TrackJS!');
+      });
+    });
   </script>
 </body>
 
